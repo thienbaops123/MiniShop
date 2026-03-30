@@ -1,0 +1,87 @@
+﻿@model MiniShop.Models.Product
+@using MiniShop.Models
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit product";
+    var categories = ViewBag.Categories as List<Category> ?? new();
+}
+
+<div class="row g-3">
+    <div class="col-12 col-lg-8">
+        <div class="admin-card p-3 p-lg-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <div class="h5 mb-1">Edit product</div>
+                    <div class="text-muted small">Update details or upload a new image.</div>
+                </div>
+                <a class="btn btn-outline-secondary" asp-action="Products">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="row g-3">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="text-danger small"></div>
+
+                <div class="col-12">
+                    <label class="form-label">Name</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label">Price</label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="form-label">Category</label>
+                    <select asp-for="CategoryId" class="form-select">
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Id" selected="@(c.Id == Model.CategoryId)">@c.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">Current image</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <img class="admin-thumb" src="@Model.ImageUrl" alt="@Model.Name" style="width:120px;height:90px;" />
+                        <div class="small text-muted">
+                            Upload a new image to replace the current one.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label">New image (optional)</label>
+                    <input type="file" class="form-control" name="imageFile" accept=".jpg,.jpeg,.png,.webp" />
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check2-circle me-1"></i> Save changes
+                    </button>
+                    <a class="btn btn-outline-secondary" asp-action="Products">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="admin-card p-3 p-lg-4">
+            <div class="h6 mb-2">Product info</div>
+            <div class="small text-muted">
+                <div><span class="text-muted">Id:</span> <span class="fw-semibold">#@Model.Id</span></div>
+                <div class="mt-1"><span class="text-muted">Image:</span> <span class="fw-semibold">@(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "None" : "Set")</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

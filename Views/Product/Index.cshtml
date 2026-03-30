@@ -1,0 +1,115 @@
+﻿@model List<MiniShop.Models.Product>
+@using MiniShop.Models
+@{
+    ViewData["Title"] = "Products";
+
+    var categories = ViewBag.Categories as List<Category> ?? new List<Category>();
+    string q = ViewBag.Query as string ?? "";
+    int categoryId = (int)(ViewBag.CategoryId ?? 0);
+    string sort = ViewBag.Sort as string ?? "";
+    int page = (int)(ViewBag.Page ?? 1);
+    int totalPages = (int)(ViewBag.TotalPages ?? 1);
+
+    string makeUrl(int p) =>
+        Url.Action("Index", "Product", new { q, categoryId = categoryId == 0 ? (int?)null : categoryId, sort, page = p }) ?? "#";
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+    <div>
+        <h2 class="mb-1">Products</h2>
+        <div class="text-muted small">Find products by name, category, and sort.</div>
+    </div>
+
+    <form class="d-flex flex-wrap gap-2" method="get">
+        <input class="form-control" style="min-width:260px"
+               name="q" value="@q" placeholder="Search name..." />
+
+        <select class="form-select" style="min-width:200px" name="categoryId">
+            <option value="0" selected="@(categoryId == 0)">All categories</option>
+            @foreach (var c in categories)
+            {
+                <option value="@c.Id" selected="@(categoryId == c.Id)">@c.Name</option>
+            }
+        </select>
+
+        <select class="form-select" style="min-width:160px" name="sort">
+            <option value="" selected="@(string.IsNullOrWhiteSpace(sort))">Newest</option>
+            <option value="price_asc" selected="@(sort == "price_asc")">Price ↑</option>
+            <option value="price_desc" selected="@(sort == "price_desc")">Price ↓</option>
+        </select>
+
+        <button class="btn btn-primary" type="submit">Apply</button>
+        <a class="btn btn-outline-secondary" href="@Url.Action("Index", "Product")">Reset</a>
+    </form>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-light border">
+        No products found.
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var p in Model)
+        {
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card h-100">
+                    <div class="ratio ratio-4x3">
+                        <img class="w-100 h-100 object-fit-cover"
+                             src="@(string.IsNullOrWhiteSpace(p.ImageUrl) ? "https://placehold.co/600x450?text=MiniShop" : p.ImageUrl)"
+                             alt="@p.Name" />
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div class="fw-semibold">@p.Name</div>
+                            <span class="badge text-bg-light border">@p.Category?.Name</span>
+                        </div>
+
+                        <div class="mt-2 fw-bold" style="font-size: 1.05rem;">
+                            @p.Price.ToString("N0") đ
+                        </div>
+
+                        <div class="mt-auto pt-3 d-grid gap-2">
+                            <a class="btn btn-outline-secondary"
+                               asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
+                                View details
+                            </a>
+
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="d-grid">
+                                <input type="hidden" name="productId" value="@p.Id" />
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-cart-plus me-1"></i> Add to cart
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (totalPages > 1)
+{
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center flex-wrap">
+            <li class="page-item @(page <= 1 ? "disabled" : "")">
+                <a class="page-link" href="@makeUrl(page - 1)">Prev</a>
+            </li>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == page ? "active" : "")">
+                    <a class="page-link" href="@makeUrl(i)">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                <a class="page-link" href="@makeUrl(page + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+}

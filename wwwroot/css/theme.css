@@ -1,0 +1,86 @@
+﻿:root {
+    --brand: #2aa198; /* teal dịu */
+    --brand-2: #268bd2; /* blue nhạt */
+    --bg: #f6f8fb;
+    --text: #0f172a;
+    --muted: #64748b;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --shadow: 0 .5rem 1.25rem rgba(15,23,42,.08);
+    --radius: 16px;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.navbar {
+    background: linear-gradient(90deg, #0b1220, #0f172a);
+    box-shadow: 0 .5rem 1.25rem rgba(0,0,0,.25);
+}
+
+    .navbar .navbar-brand {
+        font-weight: 800;
+        letter-spacing: .3px;
+    }
+
+.nav-link.active {
+    color: #fff !important;
+    opacity: 1;
+    position: relative;
+}
+
+    .nav-link.active::after {
+        content: "";
+        position: absolute;
+        left: .5rem;
+        right: .5rem;
+        bottom: .25rem;
+        height: 2px;
+        background: linear-gradient(90deg, var(--brand), var(--brand-2));
+        border-radius: 99px;
+    }
+
+.card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.btn-primary {
+    border: none;
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+}
+
+    .btn-primary:hover {
+        filter: brightness(.95);
+    }
+
+.form-control, .form-select {
+    border-radius: 12px;
+    border-color: var(--border);
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: rgba(42,161,152,.5);
+        box-shadow: 0 0 0 .25rem rgba(42,161,152,.15);
+    }
+
+.dropdown-menu {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.page-wrap {
+    min-height: calc(100vh - 72px);
+}
+
+.footer {
+    color: var(--muted);
+}

@@ -1,0 +1,91 @@
+﻿@{
+    ViewData["Title"] = "Checkout";
+    decimal total = ViewBag.Total ?? 0m;
+
+    bool needsShippingInfo = ViewBag.NeedsShippingInfo == true;
+
+    string savedFullName = ViewBag.SavedFullName as string ?? "";
+    string savedPhone = ViewBag.SavedPhone as string ?? "";
+    string savedAddress = ViewBag.SavedAddress as string ?? "";
+
+    var error = ViewBag.Error as string;
+}
+
+<div class="row g-3 g-lg-4">
+    <div class="col-12 col-lg-7">
+        <div class="d-flex align-items-end justify-content-between mb-3">
+            <div>
+                <h2 class="mb-1">Checkout</h2>
+                <div class="text-muted small">Confirm shipping information and place your order.</div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    @if (needsShippingInfo)
+                    {
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Full name</label>
+                                <input class="form-control" name="shippingFullName" value="@savedFullName" required />
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input class="form-control" name="shippingPhone" value="@savedPhone" required />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <input class="form-control" name="shippingAddress" value="@savedAddress" required />
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-3">
+                            <div class="fw-semibold mb-1">Using saved shipping info</div>
+                            <div><b>Name:</b> @savedFullName</div>
+                            <div><b>Phone:</b> @savedPhone</div>
+                            <div><b>Address:</b> @savedAddress</div>
+                        </div>
+                    }
+
+                    <div class="d-flex flex-wrap gap-2 justify-content-end mt-3">
+                        <a class="btn btn-outline-secondary" asp-controller="Cart" asp-action="Index">
+                            Back to cart
+                        </a>
+                        <button class="btn btn-primary" type="submit">
+                            Place order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+        <div class="card">
+            <div class="card-body">
+                <div class="fw-semibold mb-2">Order summary</div>
+
+                <div class="d-flex justify-content-between">
+                    <div class="text-muted">Total</div>
+                    <div class="fw-bold">@total.ToString("N0") đ</div>
+                </div>
+
+                <hr class="my-3" />
+
+                <div class="small text-muted">
+                    Tip: If you want to change saved shipping info, update it in Profile.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+﻿@model MiniShop.Models.Order
+@using MiniShop.Models
+
+@{
+    ViewData["Title"] = $"Order #{Model.Id}";
+    var badge = Model.Status switch
+    {
+        OrderStatus.Pending => "text-bg-warning",
+        OrderStatus.Processing => "text-bg-info",
+        OrderStatus.Paid => "text-bg-success",
+        _ => "text-bg-secondary"
+    };
+
+    var totalQty = Model.Items?.Sum(i => i.Quantity) ?? 0;
+    var total = Model.TotalAmount;
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1">Order #@Model.Id</h2>
+        <div class="text-muted small">
+            Created: @Model.CreatedDate.ToString("yyyy-MM-dd HH:mm")
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge @badge">@Model.Status</span>
+        <a class="btn btn-outline-secondary" asp-action="MyOrders">Back</a>
+    </div>
+</div>
+
+<div class="row g-3 g-lg-4">
+    <div class="col-12 col-lg-8">
+        <div class="card">
+            <div class="card-body pb-0">
+                <div class="fw-semibold mb-2">Items (@totalQty)</div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-end" style="width:160px;">Price</th>
+                            <th class="text-end" style="width:120px;">Qty</th>
+                            <th class="text-end" style="width:180px;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items == null || !Model.Items.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No items.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var i in Model.Items)
+                            {
+                                var name = i.Product?.Name ?? $"Product #{i.ProductId}";
+                                var sub = i.Price * i.Quantity;
+
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@name</div>
+                                        <div class="small text-muted">#@i.ProductId</div>
+                                    </td>
+                                    <td class="text-end">@i.Price.ToString("N0") đ</td>
+                                    <td class="text-end">@i.Quantity</td>
+                                    <td class="text-end fw-semibold">@sub.ToString("N0") đ</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-body">
+                <div class="d-flex justify-content-end">
+                    <div style="min-width: 280px;">
+                        <div class="d-flex justify-content-between">
+                            <div class="text-muted">Total</div>
+                            <div class="fw-bold">@total.ToString("N0") đ</div>
+                        </div>
+                        <div class="small text-muted mt-1">
+                            (Total is calculated from item subtotals.)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="fw-semibold mb-2">Shipping info</div>
+
+                <div class="mb-2">
+                    <div class="text-muted small">Full name</div>
+                    <div class="fw-semibold">@Model.ShippingFullName</div>
+                </div>
+
+                <div class="mb-2">
+                    <div class="text-muted small">Phone</div>
+                    <div class="fw-semibold">@Model.ShippingPhone</div>
+                </div>
+
+                <div class="mb-0">
+                    <div class="text-muted small">Address</div>
+                    <div class="fw-semibold">@Model.ShippingAddress</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <div class="fw-semibold mb-2">Order summary</div>
+                <div class="d-flex justify-content-between">
+                    <div class="text-muted">Items</div>
+                    <div>@totalQty</div>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="text-muted">Status</div>
+                    <div><span class="badge @badge">@Model.Status</span></div>
+                </div>
+                <hr class="my-3" />
+                <div class="d-flex justify-content-between">
+                    <div class="fw-semibold">Total</div>
+                    <div class="fw-bold">@total.ToString("N0") đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

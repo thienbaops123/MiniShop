@@ -1,0 +1,55 @@
+﻿@model MiniShop.Models.User
+@using MiniShop.Models
+
+@{
+    ViewData["Title"] = "Create user";
+}
+
+<h2 class="mb-3">Create user</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form method="post" class="card">
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input name="email" class="form-control" value="@Model.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input name="fullName" class="form-control" value="@Model.FullName" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input name="password" class="form-control" />
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Role</label>
+                <select class="form-select" name="role">
+                    <option value="User" selected="@(Model.Role == "User")">User</option>
+                    <option value="Admin" selected="@(Model.Role == "Admin")">Admin</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="@UserStatus.Active" selected="@(Model.Status == UserStatus.Active)">Active</option>
+                    <option value="@UserStatus.Suspended" selected="@(Model.Status == UserStatus.Suspended)">Suspended</option>
+                    <option value="@UserStatus.Banned" selected="@(Model.Status == UserStatus.Banned)">Banned</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+        <button class="btn btn-primary">Create</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    </div>
+</form>

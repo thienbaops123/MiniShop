@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    var error = ViewBag.Error as string;
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-5">
+        <h2 class="mb-3">Login</h2>
+
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <form method="post" asp-action="Login">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input id="loginEmail" name="email" type="email" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input id="loginPassword" name="password" type="password" class="form-control" required />
+                    </div>
+
+                    <button class="btn btn-primary w-100" type="submit">Login</button>
+
+                    <div class="text-center mt-3">
+                        <a asp-action="Register">Create an account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-info">
+            <div class="fw-semibold mb-2">Demo accounts</div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-dark btn-sm"
+                        onclick="fillDemo('admin@minishop.local','Admin@123')">
+                    Fill Admin
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                        onclick="fillDemo('user1@minishop.local','User@123')">
+                    Fill User
+                </button>
+            </div>
+
+            <div class="small text-muted mt-3">
+                <div class="mb-1">
+                    Admin (seed): <code>admin@minishop.local</code> / <code>Admin@123</code>
+                </div>
+                <div>
+                    User (seed): <code>user1@minishop.local</code> / <code>User@123</code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function fillDemo(email, password) {
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPassword').value = password;
+        }
+    </script>
+}

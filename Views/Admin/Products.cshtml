@@ -1,0 +1,170 @@
+﻿@model List<MiniShop.Models.Product>
+@using MiniShop.Models
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Products";
+
+    var q = (string?)ViewBag.Q;
+    int? categoryId = (int?)ViewBag.CategoryId;
+    var categories = ViewBag.Categories as List<Category> ?? new();
+
+    int page = (int)(ViewBag.Page ?? 1);
+    int pageSize = (int)(ViewBag.PageSize ?? 10);
+    int total = (int)(ViewBag.Total ?? 0);
+
+    int totalPages = (int)Math.Ceiling(total / (double)pageSize);
+
+    // IMPORTANT: don't name this pageUrl, Razor may confuse "@pageUrl" with "@page" directive
+    string pagerUrl(int p) =>
+        Url.Action("Products", "Admin", new { page = p, q = q, categoryId = categoryId }) ?? "#";
+}
+
+<div class="admin-card p-3 p-lg-4">
+    <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+        <div>
+            <div class="h5 mb-1">Manage products</div>
+            <div class="text-muted small">Search, filter, create, edit and delete products.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" asp-action="CreateProduct">
+                <i class="bi bi-plus-lg me-1"></i> Create product
+            </a>
+            <a class="btn btn-outline-secondary" asp-action="Orders">
+                <i class="bi bi-receipt me-1"></i> Orders
+            </a>
+        </div>
+    </div>
+
+    <form class="row g-2 align-items-end mb-3" method="get">
+        <div class="col-12 col-md-6">
+            <label class="form-label small text-muted mb-1">Search</label>
+            <input class="form-control" name="q" value="@q" placeholder="Search by product name..." />
+        </div>
+
+        <div class="col-12 col-md-4">
+            <label class="form-label small text-muted mb-1">Category</label>
+            <select class="form-select" name="categoryId">
+                <option value="">All categories</option>
+                @foreach (var c in categories)
+                {
+                    <option value="@c.Id" selected="@(categoryId == c.Id)">@c.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-12 col-md-2 d-flex gap-2">
+            <button class="btn btn-primary w-100" type="submit">
+                <i class="bi bi-search me-1"></i> Filter
+            </button>
+        </div>
+
+        <div class="col-12">
+            <div class="small text-muted">
+                Showing <b>@Model.Count</b> of <b>@total</b> product(s).
+            </div>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width:90px;">Id</th>
+                    <th style="width:90px;">Image</th>
+                    <th>Name</th>
+                    <th style="width:180px;">Category</th>
+                    <th style="width:140px;" class="text-end">Price</th>
+                    <th style="width:190px;" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="text-muted">#@p.Id</td>
+                        <td>
+                            <img class="admin-thumb" src="@p.ImageUrl" alt="@p.Name" />
+                        </td>
+                        <td class="fw-semibold">@p.Name</td>
+                        <td>
+                            <span class="badge text-bg-light border">
+                                @(p.Category?.Name ?? $"Category #{p.CategoryId}")
+                            </span>
+                        </td>
+                        <td class="text-end fw-semibold">@p.Price.ToString("0.##") đ</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="EditProduct" asp-route-id="@p.Id">
+                                <i class="bi bi-pencil-square me-1"></i> Edit
+                            </a>
+
+                            <form asp-action="DeleteProduct" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this product?');">
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash me-1"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No products found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <nav class="mt-3">
+            <ul class="pagination justify-content-end mb-0">
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" href="@pagerUrl(page - 1)">Prev</a>
+                </li>
+
+                @{
+                    // show a compact range like: 1 ... 4 5 6 ... 20
+                    int start = Math.Max(1, page - 2);
+                    int end = Math.Min(totalPages, page + 2);
+
+                    if (start > 1)
+                    {
+                        <li class="page-item"><a class="page-link" href="@pagerUrl(1)">1</a></li>
+                        if (start > 2)
+                        {
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        }
+                    }
+
+                    for (int p = start; p <= end; p++)
+                    {
+                        <li class="page-item @(p == page ? "active" : "")">
+                            <a class="page-link" href="@pagerUrl(p)">@p</a>
+                        </li>
+                    }
+
+                    if (end < totalPages)
+                    {
+                        if (end < totalPages - 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                        }
+                        <li class="page-item"><a class="page-link" href="@pagerUrl(totalPages)">@totalPages</a></li>
+                    }
+                }
+
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@pagerUrl(page + 1)">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>

@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Register";
+    var error = ViewBag.Error as string;
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-6 col-lg-5">
+        <h2 class="mb-3">Create account</h2>
+
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" asp-action="Register">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input name="email" type="email" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Full name</label>
+                        <input name="fullName" type="text" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input name="password" type="password" class="form-control" minlength="6" required />
+                        <div class="form-text">Minimum 6 characters.</div>
+                    </div>
+
+                    <button class="btn btn-success w-100" type="submit">Register</button>
+
+                    <div class="text-center mt-3">
+                        <a asp-action="Login">Already have an account? Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-secondary mt-3">
+            <div class="small">
+                Tip: sau khi đăng ký xong hệ thống sẽ tự login luôn.
+            </div>
+        </div>
+    </div>
+</div>

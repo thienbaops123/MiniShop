@@ -1,0 +1,86 @@
+﻿@model MiniShop.Models.Order
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"Order #{Model.Id}";
+}
+
+<div class="row g-3">
+    <div class="col-12 col-lg-4">
+        <div class="admin-card p-3 p-lg-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="h6 mb-0">Summary</div>
+                <a class="btn btn-sm btn-outline-secondary" asp-action="Orders">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </a>
+            </div>
+
+            <hr />
+
+            <div class="small text-muted d-grid gap-2">
+                <div class="d-flex justify-content-between">
+                    <span>Order</span>
+                    <span class="fw-semibold text-dark">#@Model.Id</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>User</span>
+                    <span class="fw-semibold text-dark">#@Model.UserId</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Created</span>
+                    <span class="fw-semibold text-dark">@Model.CreatedDate.ToString("yyyy-MM-dd HH:mm")</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Status</span>
+                    <span class="fw-semibold text-dark">@Model.Status</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Total</span>
+                    <span class="fw-semibold text-dark">@Model.TotalAmount.ToString("0.##") đ</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card p-3 p-lg-4 mt-3">
+            <div class="h6 mb-2">Shipping</div>
+            <div class="small text-muted">
+                <div class="fw-semibold text-dark">@Model.ShippingFullName</div>
+                <div>@Model.ShippingPhone</div>
+                <div class="mt-2">@Model.ShippingAddress</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-8">
+        <div class="admin-card p-3 p-lg-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="h6 mb-0">Items</div>
+                <span class="badge text-bg-light border">@Model.Items.Count item(s)</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th style="width:110px;" class="text-end">Qty</th>
+                            <th style="width:150px;" class="text-end">Price</th>
+                            <th style="width:160px;" class="text-end">Line total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var i in Model.Items)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@i.Product?.Name</td>
+                                <td class="text-end">@i.Quantity</td>
+                                <td class="text-end">@i.Price.ToString("0.##") đ</td>
+                                <td class="text-end fw-semibold">@((i.Price * i.Quantity).ToString("0.##")) đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

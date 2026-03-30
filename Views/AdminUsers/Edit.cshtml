@@ -1,0 +1,94 @@
+﻿@model MiniShop.Models.User
+@using MiniShop.Models
+
+@{
+    ViewData["Title"] = "Edit user";
+}
+
+<h2 class="mb-3">Edit user #@Model.Id</h2>
+
+@if (TempData["Error"] is string e)
+{
+    <div class="alert alert-danger">@e</div>
+}
+@if (TempData["Success"] is string s)
+{
+    <div class="alert alert-success">@s</div>
+}
+@if (ViewBag.Success != null)
+{
+    <div class="alert alert-success">@ViewBag.Success</div>
+}
+
+<form method="post" class="card mb-3">
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Email (readonly)</label>
+            <input class="form-control" value="@Model.Email" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input name="fullName" class="form-control" value="@Model.FullName" />
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <input name="phone" class="form-control" value="@Model.Phone" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Address</label>
+                <input name="address" class="form-control" value="@Model.Address" />
+            </div>
+        </div>
+
+        <div class="row g-3 mt-0">
+            <div class="col-md-6">
+                <label class="form-label">Role</label>
+                <select class="form-select" name="role">
+                    <option value="User" selected="@(Model.Role == "User")">User</option>
+                    <option value="Admin" selected="@(Model.Role == "Admin")">Admin</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                    <option value="@UserStatus.Active" selected="@(Model.Status == UserStatus.Active)">Active</option>
+                    <option value="@UserStatus.Suspended" selected="@(Model.Status == UserStatus.Suspended)">Suspended</option>
+                    <option value="@UserStatus.Banned" selected="@(Model.Status == UserStatus.Banned)">Banned</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-0">
+            <div class="col-md-6">
+                <label class="form-label">Ban reason</label>
+                <input name="banReason" class="form-control" value="@Model.BanReason" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Banned until (optional)</label>
+                <input name="bannedUntil" type="datetime-local" class="form-control"
+                       value="@(Model.BannedUntil.HasValue? Model.BannedUntil.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+        <button class="btn btn-primary">Save</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Back</a>
+    </div>
+</form>
+
+<form method="post" asp-action="ResetPassword" class="card">
+    <input type="hidden" name="id" value="@Model.Id" />
+    <div class="card-body">
+        <div class="fw-semibold mb-2">Reset password</div>
+        <div class="input-group">
+            <input name="newPassword" class="form-control" placeholder="New password (min 6 chars)" />
+            <button class="btn btn-outline-primary">Reset</button>
+        </div>
+    </div>
+</form>

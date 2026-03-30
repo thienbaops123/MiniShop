@@ -1,0 +1,161 @@
+﻿@model List<MiniShop.Models.CartItem>
+@using MiniShop.Models
+
+@{
+    ViewData["Title"] = "Your Cart";
+    decimal total = ViewBag.Total ?? 0m;
+    int totalQty = Model?.Sum(x => x.Quantity) ?? 0;
+}
+
+<div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+    <div>
+        <h2 class="mb-1">Your cart</h2>
+        <div class="text-muted small">
+            @if (Model == null || !Model.Any())
+            {
+                <span>Your cart is empty.</span>
+            }
+            else
+            {
+                <span>@totalQty item(s) in cart.</span>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-controller="Product" asp-action="Index">
+            Continue shopping
+        </a>
+
+        @if (Model != null && Model.Any())
+        {
+            <form asp-action="Clear" method="post" class="d-inline"
+                  onsubmit="return confirm('Clear all items in cart?');">
+                <button class="btn btn-outline-danger" type="submit">Clear cart</button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-light border">
+        <div class="fw-semibold mb-1">Cart is empty</div>
+        <div class="text-muted small">Add some products to your cart to continue.</div>
+
+        <div class="mt-3">
+            <a class="btn btn-primary" asp-controller="Product" asp-action="Index">
+                Browse products
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row g-3 g-lg-4">
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-end" style="width:140px;">Price</th>
+                                <th style="width:210px;">Quantity</th>
+                                <th class="text-end" style="width:160px;">Subtotal</th>
+                                <th class="text-end" style="width:110px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var sub = item.Price * item.Quantity;
+
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@item.Name</div>
+                                        <div class="small text-muted">#@item.ProductId</div>
+                                    </td>
+
+                                    <td class="text-end">
+                                        <div class="fw-semibold">@item.Price.ToString("N0") đ</div>
+                                    </td>
+
+                                    <td>
+                                        <form asp-action="Update" method="post" class="d-flex gap-2">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <input class="form-control form-control-sm"
+                                                   style="max-width: 90px;"
+                                                   type="number" min="1"
+                                                   name="quantity" value="@item.Quantity" />
+                                            <button class="btn btn-sm btn-outline-primary" type="submit">
+                                                Update
+                                            </button>
+                                        </form>
+                                    </td>
+
+                                    <td class="text-end fw-semibold">@sub.ToString("N0") đ</td>
+
+                                    <td class="text-end">
+                                        <form asp-action="Remove" method="post" class="d-inline"
+                                              onsubmit="return confirm('Remove this item?');">
+                                            <input type="hidden" name="productId" value="@item.ProductId" />
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-body d-flex flex-wrap gap-2 justify-content-between">
+                    <a class="btn btn-outline-secondary" asp-controller="Product" asp-action="Index">
+                        ← Continue shopping
+                    </a>
+
+                    <div class="text-muted small">
+                        Tip: You can update quantity for each item.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="fw-semibold mb-2">Summary</div>
+
+                    <div class="d-flex justify-content-between">
+                        <div class="text-muted">Subtotal</div>
+                        <div class="fw-semibold">@total.ToString("N0") đ</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="text-muted">Shipping</div>
+                        <div class="text-muted">Calculated at checkout</div>
+                    </div>
+
+                    <hr class="my-3" />
+
+                    <div class="d-flex justify-content-between">
+                        <div class="fw-semibold">Total</div>
+                        <div class="fw-bold">@total.ToString("N0") đ</div>
+                    </div>
+
+                    <div class="d-grid mt-3">
+                        <a class="btn btn-primary" asp-controller="Order" asp-action="Checkout">
+                            Checkout
+                        </a>
+                    </div>
+
+                    <div class="small text-muted mt-2">
+                        You will confirm shipping info on the next step.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

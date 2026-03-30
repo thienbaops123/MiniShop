@@ -1,0 +1,57 @@
+﻿@model MiniShop.Models.User
+@{
+    ViewData["Title"] = "Profile";
+    var error = ViewBag.Error as string;
+    var success = ViewBag.Success as string;
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+            <div>
+                <h2 class="mb-1">Profile</h2>
+                <div class="text-muted small">Update your personal and shipping information.</div>
+            </div>
+            <a class="btn btn-outline-secondary" asp-action="ChangePassword">Change password</a>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(error))
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(success))
+        {
+            <div class="alert alert-success">@success</div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" value="@Model.Email" disabled />
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Full name</label>
+                        <input class="form-control" name="fullName" value="@Model.FullName" />
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input class="form-control" name="phone" value="@Model.Phone" />
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Address</label>
+                        <input class="form-control" name="address" value="@Model.Address" />
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
