@@ -16,10 +16,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="minishop.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

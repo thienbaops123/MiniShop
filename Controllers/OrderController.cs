@@ -42,8 +42,9 @@ public class OrderController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Checkout(string shippingFullName, string shippingPhone, string shippingAddress)
+    public async Task<IActionResult> Checkout(string shippingFullName, string shippingPhone, string shippingAddress, string paymentMethod)
     {
+        Console.WriteLine("PaymentMethod = " + paymentMethod);
         var cart = CartSession.GetCart(HttpContext);
         if (!cart.Any()) return RedirectToAction("Index", "Cart");
 
@@ -122,7 +123,9 @@ public class OrderController : Controller
             Status = OrderStatus.Pending,
             ShippingFullName = finalFullName,
             ShippingPhone = finalPhone,
-            ShippingAddress = finalAddress
+            ShippingAddress = finalAddress,
+            PaymentMethod = paymentMethod,          // 👈 THÊM DÒNG NÀY
+            PaymentStatus = "Pending",
         };
 
         order.Items = cart.Select(x => new OrderItem
@@ -137,8 +140,12 @@ public class OrderController : Controller
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
 
-        CartSession.Clear(HttpContext);
+        if (paymentMethod == "VNPay")
+        {
+            return RedirectToAction("CreatePayment", "Payment", new { amount = order.TotalAmount });
+        }
 
+        // 👉 COD thì về trang đơn hàng
         return RedirectToAction("Details", new { id = order.Id });
     }
 

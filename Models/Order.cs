@@ -25,4 +25,7 @@ public class Order
     public string ShippingAddress { get; set; } = "";
 
     public List<OrderItem> Items { get; set; } = new();
+
+    public string PaymentMethod { get; set; } // COD hoặc VNPay
+    public string PaymentStatus { get; set; } // Pending, Paid
 }

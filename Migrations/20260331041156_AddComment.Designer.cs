@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniShop.Data;
 
@@ -10,9 +11,11 @@ using MiniShop.Data;
 namespace MiniShop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260331041156_AddComment")]
+    partial class AddComment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.25");
@@ -59,9 +62,6 @@ namespace MiniShop.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Rating")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
@@ -431,7 +431,7 @@ namespace MiniShop.Migrations
                             Id = 1,
                             Email = "admin@minishop.local",
                             FullName = "MiniShop Admin",
-                            PasswordHash = "$2a$11$B5/5dAfC590OCcEeZubh4OlYDcTN20fBrianL467QfwzMaw.7so6a",
+                            PasswordHash = "$2a$11$/HQKKOT902RQHSpFx05bmemVtujFyRIwjTzWfZD1h4cqkEIMVPvhC",
                             Role = "Admin",
                             Status = 0
                         });

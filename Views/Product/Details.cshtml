@@ -9,30 +9,153 @@
 <div class="row g-4">
     <div class="col-12 col-lg-5">
         <div class="border rounded p-3 bg-light">
-            <img src="@img" style="width:100%; height:320px; object-fit:contain;" alt="@Model.Name" />
+            <img src="@img" style="width:100%; height:320px; object-fit:contain;" />
         </div>
     </div>
 
     <div class="col-12 col-lg-7">
-        <h2 class="mb-1">@Model.Name</h2>
-        <p class="text-muted mb-2">Category: @Model.Category?.Name</p>
+        <h2>@Model.Name</h2>
+        <p class="text-muted">Category: @Model.Category?.Name</p>
 
-        <div class="h4 text-success mb-3">@Model.Price.ToString("N0") đ</div>
+        <div class="h4 text-success">@Model.Price.ToString("N0") đ</div>
 
-        <form class="row g-2" asp-controller="Cart" asp-action="Add" method="post">
+        <form asp-controller="Cart" asp-action="Add" method="post">
             <input type="hidden" name="productId" value="@Model.Id" />
-            <div class="col-4 col-md-3">
-                <input class="form-control" type="number" name="quantity" value="1" min="1" />
-            </div>
-            <div class="col-8 col-md-5">
-                <button class="btn btn-primary w-100" type="submit">
-                    <i class="bi bi-cart-plus me-1"></i> Add to cart
-                </button>
-            </div>
+            <input type="number" name="quantity" value="1" min="1" class="form-control w-25 d-inline" />
+            <button class="btn btn-primary">Add to cart</button>
         </form>
-
-        <div class="mt-3">
-            <a class="btn btn-link px-0" asp-action="Index">← Back to Products</a>
-        </div>
     </div>
 </div>
+
+<hr />
+
+<!-- ⭐ RATING TRUNG BÌNH -->
+<h5>
+    Đánh giá:
+    @{
+        double avg = ViewBag.AvgRating ?? 0;
+        int full = (int)Math.Floor(avg);
+    }
+
+    @for (int i = 1; i <= 5; i++)
+    {
+        if (i <= full)
+        {
+            <span style="color:gold;font-size:20px;">★</span>
+        }
+        else
+        {
+            <span style="color:#ccc;font-size:20px;">★</span>
+        }
+    }
+
+    <span>(@avg.ToString("0.0"))</span>
+</h5>
+
+<h4>Bình luận</h4>
+
+@if (ViewBag.Comments != null)
+{
+    foreach (var c in ViewBag.Comments)
+    {
+        <div class="border p-2 mb-2 rounded">
+            <b>@c.User.FullName</b>
+            <span class="text-muted">(@c.CreatedAt)</span>
+
+            <!-- ⭐ HIỂN THỊ SAO -->
+            <div>
+                @for (int i = 1; i <= c.Rating; i++)
+                {
+                    <span style="color:gold;">★</span>
+                }
+            </div>
+
+            <div>@c.Content</div>
+
+            @if (Context.Session.GetInt32("UserId") == c.UserId)
+            {
+                <!-- DELETE -->
+                <form method="post" asp-action="DeleteComment" style="display:inline;">
+                    <input type="hidden" name="id" value="@c.Id" />
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <button class="btn btn-sm btn-danger">Xóa</button>
+                </form>
+
+                <!-- EDIT -->
+                <button class="btn btn-sm btn-warning"
+                        onclick="showEdit(@c.Id, this)"
+                        data-content="@c.Content"
+                        data-rating="@c.Rating">
+                    Sửa
+                </button>
+            }
+        </div>
+    }
+}
+
+@if (Context.Session.GetInt32("UserId") != null)
+{
+    <form method="post" asp-action="AddComment">
+        <input type="hidden" name="productId" value="@Model.Id" />
+
+        <!-- ⭐ CHỌN SAO -->
+        <div class="mb-2">
+            <label>Đánh giá:</label><br />
+            @for (int i = 1; i <= 5; i++)
+            {
+                <label style="margin-right:10px;">
+                    <input type="radio" name="rating" value="@i" required /> @i ⭐
+                </label>
+            }
+        </div>
+
+        <textarea name="content" class="form-control" placeholder="Nhập bình luận..." required></textarea>
+
+        <button class="btn btn-primary mt-2">Gửi bình luận</button>
+    </form>
+}
+else
+{
+    <div class="text-muted">Đăng nhập để bình luận</div>
+}
+
+<!-- EDIT FORM -->
+<div id="editBox" style="display:none;" class="mt-3">
+    <form method="post" asp-action="EditComment">
+        <input type="hidden" id="editId" name="id" />
+        <input type="hidden" name="productId" value="@Model.Id" />
+
+        <!-- ⭐ EDIT RATING -->
+        <div class="mb-2">
+            <label>Sửa đánh giá:</label><br />
+            @for (int i = 1; i <= 5; i++)
+            {
+                <label style="margin-right:10px;">
+                    <input type="radio" name="editRating" value="@i" /> @i ⭐
+                </label>
+            }
+        </div>
+
+        <textarea id="editContent" name="content" class="form-control"></textarea>
+
+        <button class="btn btn-success mt-2">Lưu chỉnh sửa</button>
+    </form>
+</div>
+
+<script>
+    function showEdit(id, btn) {
+        var content = btn.getAttribute("data-content");
+        var rating = btn.getAttribute("data-rating");
+
+        document.getElementById("editBox").style.display = "block";
+        document.getElementById("editId").value = id;
+        document.getElementById("editContent").value = content;
+
+        // reset
+        document.querySelectorAll("input[name='editRating']").forEach(r => r.checked = false);
+
+        if (rating) {
+            document.querySelector(`input[name='editRating'][value='${rating}']`).checked = true;
+        }
+    }
+</script>
