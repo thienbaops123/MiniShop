@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniShop.Data;
 
@@ -10,9 +11,11 @@ using MiniShop.Data;
 namespace MiniShop.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260331021015_AddPayment")]
+    partial class AddPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.25");
@@ -43,37 +46,6 @@ namespace MiniShop.Migrations
                             Id = 2,
                             Name = "Clothes"
                         });
-                });
-
-            modelBuilder.Entity("MiniShop.Models.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("MiniShop.Models.Order", b =>
@@ -431,29 +403,10 @@ namespace MiniShop.Migrations
                             Id = 1,
                             Email = "admin@minishop.local",
                             FullName = "MiniShop Admin",
-                            PasswordHash = "$2a$11$B5/5dAfC590OCcEeZubh4OlYDcTN20fBrianL467QfwzMaw.7so6a",
+                            PasswordHash = "$2a$11$JGjCrbUU9ExD2PlSbAxn1eSemi4BvyEkFOlqTWA7aNfyq5V/eQmnK",
                             Role = "Admin",
                             Status = 0
                         });
-                });
-
-            modelBuilder.Entity("MiniShop.Models.Comment", b =>
-                {
-                    b.HasOne("MiniShop.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MiniShop.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MiniShop.Models.Order", b =>

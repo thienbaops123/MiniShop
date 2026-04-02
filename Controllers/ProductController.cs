@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniShop.Data;
+using MiniShop.Models;
 
 namespace MiniShop.Controllers;
 
@@ -72,6 +73,70 @@ public class ProductController : Controller
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (product == null) return NotFound();
+        var comments = _db.Comments
+        .Where(x => x.ProductId == id)
+        .Include(x => x.User)
+        .OrderByDescending(x => x.Id)
+        .ToList();
+
+        ViewBag.Comments = comments;
         return View(product);
+    }
+    [HttpPost]
+    public IActionResult AddComment(int productId, string content)
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+
+        if (userId == null)
+            return RedirectToAction("Login", "Account");
+
+        var comment = new Comment
+        {
+            ProductId = productId,
+            UserId = userId.Value,
+            Content = content,
+            CreatedAt = DateTime.Now
+        };
+
+        _db.Comments.Add(comment);
+        _db.SaveChanges();
+
+        return RedirectToAction("Details", new { id = productId });
+    }
+
+    // ================== DELETE COMMENT ==================
+    [HttpPost]
+    public IActionResult DeleteComment(int id, int productId)
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+
+        var comment = _db.Comments.FirstOrDefault(x => x.Id == id);
+
+        if (comment != null && comment.UserId == userId)
+        {
+            _db.Comments.Remove(comment);
+            _db.SaveChanges();
+        }
+
+        return RedirectToAction("Details", new { id = productId });
+    }
+
+    // ================== EDIT COMMENT ==================
+    [HttpPost]
+    public IActionResult EditComment(int id, string content, int productId, int rating)
+    {
+        var userId = HttpContext.Session.GetInt32("UserId");
+
+        var comment = _db.Comments.FirstOrDefault(x => x.Id == id);
+
+        if (comment != null && comment.UserId == userId)
+        {
+            comment.Content = content;
+            comment.Rating = rating; // 👈 THÊM DÒNG NÀY
+
+            _db.SaveChanges();
+        }
+
+        return RedirectToAction("Details", new { id = productId });
     }
 }

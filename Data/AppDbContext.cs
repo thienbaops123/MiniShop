@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MiniShop.Models;
 
+
 namespace MiniShop.Data;
 
 public class AppDbContext : DbContext
@@ -12,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Comment> Comments => Set<Comment>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
